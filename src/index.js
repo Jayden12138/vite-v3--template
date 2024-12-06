@@ -53,29 +53,17 @@ export const init = () => {
   // 绑定
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    // 50, 50,
-    // 50, 100,
-    // 150, 100,
+  var pointsData = createCircle(100, 100, 50, 50)
 
-    // 150, 100,
-    // 150, 50,
-    // 50, 50
-    // 100, 75, 0, 1, 0,
-    50, 50, 1, 0, 0,
-    50, 100, 0, 1, 0,
-    150, 100, 0, 0, 1,
-    150, 50, 1, 1, 0,
-    50, 50, 1, 0, 0,
-  ]), gl.STATIC_DRAW);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([
-    0, 1, 2,
-    2, 3, 0
-  ]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointsData), gl.STATIC_DRAW);
+  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([
+  //   0, 1, 2,
+  //   2, 3, 0
+  // ]), gl.STATIC_DRAW);
 
   // 将缓冲区对象分配给attribute变量
-  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 5, 0);
-  gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 5, 4 * 2);
+  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 6, 0);
+  gl.vertexAttribPointer(a_color, 4, gl.FLOAT, false, 4 * 6, 4 * 2);
   // gl.vertexAttribPointer(point_size, 1, gl.FLOAT, false, 4 * 3, 4 * 2);
 
   // 启用attribute
@@ -89,10 +77,25 @@ export const init = () => {
   // gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
   // gl.drawElements(gl.TRIANGLE_STRIP, 6, gl.UNSIGNED_SHORT, 0)
 
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, 5);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, 52);
 
   // bindEvent(gl, program);
   // bindTriangleEvent(gl, program);
+}
+
+
+function createCircle(x, y, r, n){
+  var points = [x, y, ...randomColor()];
+  for(var i = 0; i <= n; i++){
+    var angle = i * 2 * Math.PI / n;
+    var pointX = r * Math.cos(angle) + x;
+    var pointY = r * Math.sin(angle) + y;
+    
+    console.log(i, pointX, pointY)
+    points.push(pointX, pointY, ...randomColor());
+  }
+  console.log(points)
+  return points
 }
 
 function bindTriangleEvent(gl, program) {
