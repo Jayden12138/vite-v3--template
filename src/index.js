@@ -30,7 +30,82 @@ export const init = () => {
   var screenSize = gl.getUniformLocation(program, "screenSize");
   gl.uniform2f(screenSize, oCanvas.width, oCanvas.height);
 
-  bindEvent(gl, program);
+  var a_position = gl.getAttribLocation(program, "a_position");
+  var point_size = gl.getAttribLocation(program, "point_size");
+  var a_color = gl.getAttribLocation(program, "a_color");
+  gl.vertexAttrib4f(a_color, 1, 1, 0, 1);
+
+  // 创建缓冲区
+  var positionBuffer = gl.createBuffer();
+
+  // 绑定
+  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+
+  // 向缓冲区写入数据
+  // gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+  //   50, 50,
+  //   50, 100,
+  //   100, 100
+  // ]), gl.STATIC_DRAW);
+  // 
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    50, 50, 10.0,
+    50, 100, 20.0,
+    100, 100, 30,0
+  ]), gl.STATIC_DRAW);
+
+  // 将缓冲区对象分配给attribute变量
+  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 3, 0);
+  gl.vertexAttribPointer(point_size, 1, gl.FLOAT, false, 4 * 3, 4 * 2);
+
+  // 启用attribute
+  gl.enableVertexAttribArray(a_position);
+  gl.enableVertexAttribArray(point_size);
+
+  // 绘制
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.drawArrays(gl.POINTS, 0, 3);
+
+  // bindEvent(gl, program);
+  bindTriangleEvent(gl, program);
+}
+
+function bindTriangleEvent(gl, program) {
+  var a_position = gl.getAttribLocation(program, "a_position");
+  var a_color = gl.getAttribLocation(program, "a_color");
+  var point_size = gl.getAttribLocation(program, "point_size");
+  var points = [];
+  oCanvas.onmousedown = function (e) {
+    // 清空画布
+    gl.clearColor(0, 0, 0, 1);
+
+    // 清空颜色缓冲区
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    var x = e.offsetX;
+    var y = e.offsetY;
+
+    // 随机颜色 rgba
+    var color = randomColor();
+
+    points.push(x, y, 10.0);
+    console.log(points)
+    if(points.length % 3 === 0){
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(points), gl.STATIC_DRAW);
+
+      // 将缓冲区对象分配给attribute变量
+      gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 3, 0);
+      gl.vertexAttribPointer(point_size, 1, gl.FLOAT, false, 4 * 3, 4 * 2);
+
+      // 启用attribute
+      gl.enableVertexAttribArray(a_position);
+      gl.enableVertexAttribArray(point_size);
+
+      // 绘制
+      gl.drawArrays(gl.TRIANGLES, 0, points.length / 3);
+      gl.drawArrays(gl.POINTS, 0, points.length / 3);
+    }
+  };
 }
 
 function bindEvent(gl, program) {
