@@ -33,7 +33,7 @@ export const init = () => {
   var a_position = gl.getAttribLocation(program, "a_position");
   var point_size = gl.getAttribLocation(program, "point_size");
   var a_color = gl.getAttribLocation(program, "a_color");
-  gl.vertexAttrib4f(a_color, 1, 1, 0, 1);
+  // gl.vertexAttrib4f(a_color, 1, 1, 0, 1);
 
   // 创建缓冲区
   var positionBuffer = gl.createBuffer();
@@ -48,26 +48,51 @@ export const init = () => {
   //   100, 100
   // ]), gl.STATIC_DRAW);
   // 
+  var indexBuffer = gl.createBuffer();
+
+  // 绑定
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-    50, 50, 10.0,
-    50, 100, 20.0,
-    100, 100, 30,0
+    // 50, 50,
+    // 50, 100,
+    // 150, 100,
+
+    // 150, 100,
+    // 150, 50,
+    // 50, 50
+    // 100, 75, 0, 1, 0,
+    50, 50, 1, 0, 0,
+    50, 100, 0, 1, 0,
+    150, 100, 0, 0, 1,
+    150, 50, 1, 1, 0,
+    50, 50, 1, 0, 0,
+  ]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([
+    0, 1, 2,
+    2, 3, 0
   ]), gl.STATIC_DRAW);
 
   // 将缓冲区对象分配给attribute变量
-  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 3, 0);
-  gl.vertexAttribPointer(point_size, 1, gl.FLOAT, false, 4 * 3, 4 * 2);
+  gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 5, 0);
+  gl.vertexAttribPointer(a_color, 3, gl.FLOAT, false, 4 * 5, 4 * 2);
+  // gl.vertexAttribPointer(point_size, 1, gl.FLOAT, false, 4 * 3, 4 * 2);
 
   // 启用attribute
   gl.enableVertexAttribArray(a_position);
-  gl.enableVertexAttribArray(point_size);
+  gl.enableVertexAttribArray(a_color);
+  // gl.enableVertexAttribArray(point_size);
 
   // 绘制
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-  gl.drawArrays(gl.POINTS, 0, 3);
+  // gl.drawArrays(gl.TRIANGLES, 0, 6);
+  // gl.drawArrays(gl.POINTS, 0, 3);
+  // gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
+  // gl.drawElements(gl.TRIANGLE_STRIP, 6, gl.UNSIGNED_SHORT, 0)
+
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, 5);
 
   // bindEvent(gl, program);
-  bindTriangleEvent(gl, program);
+  // bindTriangleEvent(gl, program);
 }
 
 function bindTriangleEvent(gl, program) {
