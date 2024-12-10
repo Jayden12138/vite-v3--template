@@ -53,13 +53,16 @@ export const init = () => {
   // 绑定
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-  var pointsData = createCircle(100, 100, 50, 50)
+  gl.enable(gl.BLEND)
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+  // var pointsData = createCircle(100, 100, 50, 50)
+  const { positions, indices } = criquePoints(100, 100, 100, 50, 50)
+  var pointsData = positions
+  var indicesData = indices
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointsData), gl.STATIC_DRAW);
-  // gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([
-  //   0, 1, 2,
-  //   2, 3, 0
-  // ]), gl.STATIC_DRAW);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indicesData), gl.STATIC_DRAW);
 
   // 将缓冲区对象分配给attribute变量
   gl.vertexAttribPointer(a_position, 2, gl.FLOAT, false, 4 * 6, 0);
@@ -74,10 +77,11 @@ export const init = () => {
   // 绘制
   // gl.drawArrays(gl.TRIANGLES, 0, 6);
   // gl.drawArrays(gl.POINTS, 0, 3);
+  // gl.drawElements(gl.TRIANGLES, indicesData.length, gl.UNSIGNED_SHORT, 0)
   // gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0)
-  // gl.drawElements(gl.TRIANGLE_STRIP, 6, gl.UNSIGNED_SHORT, 0)
+  gl.drawElements(gl.TRIANGLE_STRIP, indicesData.length, gl.UNSIGNED_SHORT, 0)
 
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, 52);
+  // gl.drawArrays(gl.TRIANGLE_FAN, 0, 52);
 
   // bindEvent(gl, program);
   // bindTriangleEvent(gl, program);
@@ -96,6 +100,57 @@ function createCircle(x, y, r, n){
   }
   console.log(points)
   return points
+}
+
+function criquePoints(x, y, outerRadius, innerRadius, n){
+  var positions = [];
+  var indices = [];
+  var color = {
+    r: 0,
+    g: 0,
+    b: 1,
+    a: 0.3
+  }
+
+  for(var i = 0; i < n; i++){
+    // color = {
+    //   r: Math.random(),
+    //   g: Math.random(),
+    //   b: Math.random(),
+    //   a: 0.3
+    // }
+    var angle = i * 2 * Math.PI / n;
+    var outerPointX = outerRadius * Math.cos(angle) + x;
+    var outerPointY = outerRadius * Math.sin(angle) + y;
+    var innerPointX = innerRadius * Math.cos(angle) + x;
+    var innerPointY = innerRadius * Math.sin(angle) + y;
+    positions.push(innerPointX, innerPointY, color.r, color.g, color.b, color.a);
+    positions.push(outerPointX, outerPointY, color.r, color.g, color.b, color.a);
+
+    var v0 = i * 2;
+    var v1 = v0 + 1;
+    var v2 = v0 + 2;
+    var v3 = v0 + 3;
+
+    if(i === n - 1){
+      v2 = 0;
+      v3 = 1;
+    }
+
+    // indices.push(v0, v1, v2);
+    // indices.push(v2, v1, v3);
+    // indices.push(v0, v1);
+    indices.push(v0, v1, v2, v3);
+  }
+
+  // indices.push(0, 1);
+
+  console.log(positions, indices)
+
+  return {
+    positions,
+    indices
+  }
 }
 
 function bindTriangleEvent(gl, program) {
